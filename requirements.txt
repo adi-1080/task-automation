@@ -1,5 +1,21 @@
+# Core
 fastapi
 uvicorn
+python-multipart
+
+# AI Services
 google-generativeai
+requests
+
+# Image Processing
+Pillow
+cloudinary
+
+# Environment
 python-dotenv
+
+# Data Validation
 pydantic
+
+# Async (optional)
+httpx
