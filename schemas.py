@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, Field, RootModel, validator
 from typing import Dict, List, Optional, Literal
+import json
 
 class PosterTheme(BaseModel):
     name: str = Field(..., example="Community Unity")
@@ -117,6 +118,26 @@ class PosterResponse(BaseModel):
     enhanced_prompt: str
     variations: List[CloudinaryResponse]
 
+# class BudgetBreakdown(RootModel):
+#     root: Dict[str, float] = Field(
+#         ...,
+#         example={"materials": 5000, "labor": 3000},
+#         description="Key-value pairs of budget categories and amounts"
+#     )
+
+# class BudgetEstimate(BaseModel):
+#     amount: float = Field(..., gt=0, example=8000.0)
+#     breakdown: BudgetBreakdown
+#     currency: str = Field("INR", example="INR")
+
+# class SubtaskAssignment(BaseModel):
+#     subtask: str = Field(..., example="Venue Setup")
+#     department: str = Field(..., example="logistics")
+#     instructions: str = Field(..., example="Arrange chairs and audio equipment")
+#     estimated_time: str = Field(..., example="2 days")
+#     estimated_budget: BudgetEstimate
+import json
+
 class BudgetBreakdown(RootModel):
     root: Dict[str, float] = Field(
         ...,
@@ -125,9 +146,20 @@ class BudgetBreakdown(RootModel):
     )
 
 class BudgetEstimate(BaseModel):
-    amount: float = Field(..., gt=0, example=8000.0)
+    amount: float = Field(
+        ..., 
+        gt=0, 
+        example=8000.0,
+        description="Must be positive value greater than 0"
+    )
     breakdown: BudgetBreakdown
     currency: str = Field("INR", example="INR")
+
+    @validator('amount')
+    def validate_amount(cls, v):
+        if v <= 0:
+            raise ValueError("Budget amount must be greater than 0")
+        return round(v, 2)  # Ensure clean decimal values
 
 class SubtaskAssignment(BaseModel):
     subtask: str = Field(..., example="Venue Setup")
